@@ -9,9 +9,20 @@ const {sendStudentEmail}=require("./email");
 const Database=require("better-sqlite3"), multer=require("multer"), rateLimit=require("express-rate-limit");
 const app=express(), PORT=process.env.PORT||3000;
 if(process.env.NODE_ENV==="production") app.set("trust proxy",1);
-const uploadDir=path.join(__dirname,"uploads");fs.mkdirSync(uploadDir,{recursive:true});
-const siteImageDir=path.join(__dirname,"../public/uploads/site");fs.mkdirSync(siteImageDir,{recursive:true});
-const db=new Database(path.join(__dirname,"../database/tso.sqlite"));db.pragma("journal_mode = WAL");db.pragma("foreign_keys = ON");
+const projectRoot=path.resolve(__dirname,"..");
+const dataRoot=process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : projectRoot;
+
+const databaseDir=path.join(dataRoot,"database");
+const uploadDir=path.join(dataRoot,"server","uploads");
+const siteImageDir=path.join(dataRoot,"public","uploads","site");
+
+for(const directory of [databaseDir,uploadDir,siteImageDir]){
+  fs.mkdirSync(directory,{recursive:true});
+}
+
+const db=new Database(path.join(databaseDir,"tso.sqlite"));
+db.pragma("journal_mode = WAL");
+db.pragma("foreign_keys = ON");
 db.exec(`
 CREATE TABLE IF NOT EXISTS students(id INTEGER PRIMARY KEY,full_name TEXT NOT NULL,student_number TEXT UNIQUE NOT NULL,email TEXT UNIQUE NOT NULL,phone TEXT NOT NULL,password_hash TEXT NOT NULL,created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE IF NOT EXISTS applications(id INTEGER PRIMARY KEY,student_id INTEGER UNIQUE NOT NULL REFERENCES students(id),course TEXT NOT NULL,faculty TEXT NOT NULL,study_year TEXT NOT NULL,notes TEXT,status TEXT NOT NULL DEFAULT 'Submitted',created_at TEXT DEFAULT CURRENT_TIMESTAMP,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
@@ -110,7 +121,8 @@ app.use(session({
   cookie:{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV==="production",maxAge:7*24*60*60*1000,path:"/"}
 }));
 app.use("/api/auth",rateLimit({windowMs:15*60*1000,limit:30,standardHeaders:true,legacyHeaders:false}));
-app.use(express.static(path.join(__dirname,"../public")));
+app.use("/uploads/site",express.static(siteImageDir));
+app.use(express.static(path.join(projectRoot,"public")));
 const requireStudent=(req,res,next)=>req.session.user?.role==="student"?next():res.status(401).json({message:"Please sign in as a student."});
 const requireAdmin=(req,res,next)=>req.session.user?.role==="admin"?next():res.status(401).json({message:"Administrator sign-in required."});
 function adminBootstrap(){if(!process.env.ADMIN_EMAIL||!process.env.ADMIN_PASSWORD)return;const email=process.env.ADMIN_EMAIL.toLowerCase();if(!db.prepare("SELECT id FROM admins WHERE email=?").get(email)){const hash=bcrypt.hashSync(process.env.ADMIN_PASSWORD,12);db.prepare("INSERT INTO admins(email,password_hash) VALUES(?,?)").run(email,hash);console.log("Initial administrator account created.");}}
