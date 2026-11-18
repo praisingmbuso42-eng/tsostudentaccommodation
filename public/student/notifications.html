@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Your TSO Student Housing notification history.">
+  <title>Notifications | TSO Student Housing</title>
+  <link rel="stylesheet" href="../css/style.css"><script src="../js/main.js" defer></script>
+</head>
+<body>
+  <header class="navbar portal-navbar">
+    <a href="dashboard.html" class="logo">TSO<span>.</span><small>STUDENT PORTAL</small></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="dashboard.html">Home</a><a href="application.html">My application</a><a href="documents.html">My documents</a><a class="active" href="notifications.html">Notifications <span class="notification-nav-count" id="notificationCount" hidden>0</span></a><a href="reviews.html">Reviews</a>
+    </nav>
+    <div class="nav-actions"><a class="notification-bell active" href="notifications.html" aria-label="Notifications">♧ <span id="notificationBellCount" class="notification-count" hidden>0</span></a><button class="outline-dark" id="logoutButton" type="button">Log out</button></div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false">☰</button>
+  </header>
+  <main class="page-wrap notification-page">
+    <section class="dashboard-head"><span class="section-label">STUDENT UPDATES</span><h1>Notifications</h1><p>Application decisions, document reviews, accommodation allocation and important residence announcements.</p></section>
+    <section class="content-panel">
+      <div class="notification-toolbar"><p id="notificationSummary" aria-live="polite">Loading your notifications…</p><button class="outline-dark" id="markAllRead" type="button">Mark all as read</button></div>
+      <div id="notificationList" class="notification-list" aria-live="polite"><p>Loading notifications…</p></div>
+    </section>
+  </main>
+  <footer class="portal-footer"><a href="dashboard.html" class="logo" style="color:#fff">TSO<span>.</span><small>STUDENT HOUSING</small></a><span>Private student portal · VUT applicants only</span><a href="../index.html">Public website</a></footer>
+</body>
+</html>

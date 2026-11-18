@@ -1,0 +1,26 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.git/
+**/.git/
+.vercel/
+**/.vercel/
+# Private database files and backups
+database/*.sqlite
+database/*.sqlite-*
+database/*.db
+database/*.db-*
+
+# Student documents and uploaded files
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Local editor settings
+.vscode/
+
+# Deployment metadata
+.vercel/
+**/.vercel/
+
+tsostudentaccommodation/
